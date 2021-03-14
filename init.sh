@@ -47,7 +47,7 @@ useradd ansible
 mkdir -p /home/ansible/.ssh
 usermod -aG docker ansible
 chmod 0700 /home/ansible/.ssh
-echo ${KEY} > /home/ansible/.ssh/authorized_keys
+echo '${KEY}' > /home/ansible/.ssh/authorized_keys
 chmod 0600 /home/ansible/.ssh/authorized_keys
 chown -R ansible /home/ansible" > /srv/challenge/terraform/scripts/create-users.sh
 ## EoF
