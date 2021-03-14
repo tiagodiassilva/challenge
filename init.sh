@@ -22,6 +22,7 @@ apt -y -qq install git git-flow
 apt -y autoremove
 
 # Criar chave SSH
+mkdir /srv/Projects/ssh
 ssh-keygen -t rsa -b 2048 -f /srv/Projects/ssh/iam.pem -q -P ''
 chmod 400 /srv/Projects/ssh/iam.pem
 ssh-keygen -y -f /srv/Projects/ssh/iam.pem | tee -a /srv/Projects/ssh/iam.pub
