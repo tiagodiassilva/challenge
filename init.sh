@@ -1,8 +1,6 @@
 #!/bin/sh
 ### Init Script
 ### Script de inicialização do Projeto
-### Autor: Tiago Dias da Silva
-### IMPORTANTE: Leia o arquivo README.md antes de executar
 
 # Realiza upgrade do pacotes instalados no SO
 apt -y update

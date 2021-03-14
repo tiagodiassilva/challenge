@@ -1,0 +1,87 @@
+resource "aws_security_group" "default" {
+  name = "sg_docker"
+  # Allow all inbound
+  ingress {
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Enable ICMP
+  ingress {
+    from_port = -1
+    to_port = -1
+    protocol = "icmp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_key_pair" "default" {
+  key_name   = "iam_user"
+  public_key = "${file(var.public_key)}"
+}
+
+resource "aws_instance" "docker" {
+  ami = "${var.ami}"
+  instance_type = "${var.instance_type}"
+  key_name = "${aws_key_pair.default.id}"
+  associate_public_ip_address = true
+  user_data = "${file(var.bootstrap_path)}"
+  vpc_security_group_ids = ["${aws_security_group.default.id}"]
+
+  ebs_block_device {
+    device_name           = "/dev/sdg"
+    volume_size           = 500
+    volume_type           = "io1"
+    iops                  = 2000
+    encrypted             = true
+    delete_on_termination = true
+  }
+
+  provisioner "file" {
+    source = "~/.ssh/iam.pub"
+    destination = "/tmp/iam.pub"
+    connection {
+      type = "ssh"
+      user = "ubuntu"
+      private_key = "${file("~/.ssh/iam.pem")}"
+      host = "${aws_instance.docker.public_ip}"
+    }
+  }
+
+  # This is where we configure the instance with ansible-playbook
+  provisioner "local-exec" {
+    command = <<EOT
+      sleep 30;
+	  >docker.ini;
+	  echo "[docker]" | tee -a docker.ini;
+	  echo "${aws_instance.docker.public_ip} ansible_user=${var.ansible_user} ansible_ssh_private_key_file=${var.private_key}" | tee -a docker.ini;
+      export ANSIBLE_HOST_KEY_CHECKING=False;
+	  ansible-playbook -u ${var.ansible_user} --private-key ${var.private_key} -i docker.ini ~/playbooks/install_docker.yaml
+    EOT
+  }
+
+  tags = {
+    Name = "Docker"
+  }
+}
+
+### The Elastic IP for the Docker
+resource "aws_eip" "eip-docker" {
+  vpc = true
+  instance = aws_instance.docker.id
+  associate_with_private_ip = aws_instance.docker.private_ip
+  tags = {
+    Name = "Eip-docker"
+  }
+}
+
+
