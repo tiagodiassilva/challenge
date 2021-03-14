@@ -1,6 +1,6 @@
 resource "aws_security_group" "default" {
   name = "sg_docker"
-  # Allow all inbound
+  # Allow all ports
   ingress {
     from_port   = 0
     to_port     = 65535
@@ -15,7 +15,7 @@ resource "aws_security_group" "default" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Enable ICMP
+  # Habilita PING
   ingress {
     from_port = -1
     to_port = -1
@@ -24,11 +24,13 @@ resource "aws_security_group" "default" {
   }
 }
 
+# configura chave ssh
 resource "aws_key_pair" "default" {
   key_name   = "iam_user"
   public_key = "${file(var.public_key)}"
 }
 
+# cria Docker instance
 resource "aws_instance" "docker" {
   ami = "${var.ami}"
   instance_type = "${var.instance_type}"
@@ -37,6 +39,7 @@ resource "aws_instance" "docker" {
   user_data = "${file(var.bootstrap_path)}"
   vpc_security_group_ids = ["${aws_security_group.default.id}"]
 
+# configura disco adicional na docker instance
   ebs_block_device {
     device_name           = "/dev/sdg"
     volume_size           = 50
@@ -46,6 +49,7 @@ resource "aws_instance" "docker" {
     delete_on_termination = true
   }
 
+  # envia script remoto para instalação do Ansible
   provisioner "file" {
     source = "./scripts/install-ansible.sh"
     destination = "/tmp/install-ansible.sh"
@@ -57,6 +61,7 @@ resource "aws_instance" "docker" {
     }
   }
 
+  # executa script remoto para instalação do Ansible
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/install-ansible.sh",
@@ -70,7 +75,7 @@ resource "aws_instance" "docker" {
     }
   }
 
-  # This is where we configure the instance with ansible-playbook
+  # Configura a docker instance com executando os playbooks do ansible
   provisioner "local-exec" {
     command = <<EOT
       sleep 30;
@@ -78,9 +83,8 @@ resource "aws_instance" "docker" {
       echo "[docker]" | tee -a docker.ini;
       echo "${aws_instance.docker.public_ip} ansible_user=${var.ansible_user} ansible_ssh_private_key_file=${var.private_key}" | tee -a docker.ini;
       export ANSIBLE_HOST_KEY_CHECKING=False;
-      ansible-playbook -u ${var.ansible_user} --private-key ${var.private_key} -i docker.ini /home/tiago/Projects/ansible/playbooks/install_docker.yaml
-      ansible-playbook -u ${var.ansible_user} --private-key ${var.private_key} -i docker.ini /home/tiago/Projects/ansible/playbooks/deploy_docker.yaml
-
+      ansible-playbook -u ${var.ansible_user} --private-key ${var.private_key} -i docker.ini /srv/challenge/ansible/playbooks/install_docker.yaml
+      ansible-playbook -u ${var.ansible_user} --private-key ${var.private_key} -i docker.ini /srv/challenge/ansible/playbooks/deploy_docker.yaml
     EOT
   }
 

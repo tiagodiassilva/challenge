@@ -1,15 +1,15 @@
 variable "aws_region" {
-  description = "AWS region for setup Docker"
+  description = "Região para criação da Instancia"
   default = "sa-east-1"
 }
 
 variable "ami" {
-  description = "Amazon Linux AMI"
+  description = "AMI Instance"
   default = "ami-0dec7a53c83222c6f"
 }
 
 variable "instance_type" {
-  description = "Instance type"
+  description = "Tipo da instancia"
   default = "t2.nano"
 }
 

@@ -1,4 +1,4 @@
-### The Ansible inventory file
+### Cria inventario dinamico
 resource "local_file" "AnsibleInventory" {
  content = templatefile("inventory.tmpl",
  {
