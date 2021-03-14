@@ -1,0 +1,19 @@
+---
+- name: Deploy Applications
+  hosts: docker
+  become: true
+
+    - git:
+      repo: git://foosball.example.org/docker
+      dest: /srv/docker
+      update: no
+
+    - name: Change file permissions
+      ansible.builtin.file:
+        path: /srv/docker/docker-deploy.sh
+        owner: root
+        group: root
+        mode: '0750'
+
+    - name: Run Script to Deploy
+      shell: /srv/docker/docker-deploy.sh
