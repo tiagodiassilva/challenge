@@ -50,4 +50,9 @@ chmod 0700 /home/ansible/.ssh
 echo '${KEY}' > /home/ansible/.ssh/authorized_keys
 chmod 0600 /home/ansible/.ssh/authorized_keys
 chown -R ansible /home/ansible" > /srv/challenge/terraform/scripts/create-users.sh
+
+# Executa TERRAFORM
+cd /srv/challenge/terraform/
+/usr/local/bin/terraform init
+/usr/local/bin/terraform apply
 ## EoF
