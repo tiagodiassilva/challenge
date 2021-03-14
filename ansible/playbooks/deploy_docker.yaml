@@ -15,5 +15,5 @@
         group: root
         mode: '0750'
 
-    - name: Run Script to Deploy
+    - name: Run Script to Deploy Containers
       shell: /srv/challenge/docker/docker-deploy.sh
