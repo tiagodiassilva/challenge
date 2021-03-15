@@ -22,10 +22,12 @@ apt -y -qq install git git-flow
 apt -y autoremove
 
 # Criar chave SSH
-mkdir /srv/challenge/ssh
-ssh-keygen -t rsa -b 2048 -f /srv/challenge/ssh/iam.pem -q -P ''
-chmod 400 /srv/challenge/ssh/iam.pem
-ssh-keygen -y -f /srv/challenge/ssh/iam.pem | tee -a /srv/challenge/ssh/iam.pub
+if [ -f "/root/.ssh/id_rsa" ]; then
+	echo "Chave SSH Existente";
+else
+	echo "Criando chave SSH";
+	ssh-keygen -t rsa -b 2048 -q -P '';
+fi
 
 # Install Terraform
 mkdir /srv/challenge/pacotes/
@@ -41,7 +43,7 @@ unzip awscliv2.zip
 sudo ./aws/install
 
 # Gera script para criação do usuário ansible na EC2 instance
-KEY=`cat /srv/challenge/ssh/iam.pub`
+KEY=`cat /root/.ssh/id_rsa.pub`
 echo "#!/bin/sh
 useradd ansible
 mkdir -p /home/ansible/.ssh
@@ -54,5 +56,7 @@ chown -R ansible /home/ansible" > /srv/challenge/terraform/scripts/create-users.
 # Executa TERRAFORM
 cd /srv/challenge/terraform/
 /usr/local/bin/terraform init
+/usr/local/bin/terraform validate
+/usr/local/bin/terraform plan
 /usr/local/bin/terraform apply
 ## EoF
