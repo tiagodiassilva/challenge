@@ -4,6 +4,10 @@
   become: true
 
   tasks:
+    - name: Aguardar 5min para liberar memória
+      pause:
+        minutes: 5
+      
     - name: Clone GIT
       git:
         repo: 'https://github.com/tiagodiassilva/challenge.git'
