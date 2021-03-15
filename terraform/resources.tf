@@ -51,12 +51,12 @@ resource "aws_instance" "docker" {
 
   # envia script remoto para instalação do Ansible
   provisioner "file" {
-    source = "./scripts/install-ansible.sh"
+    source = "/srv/challenge/terraform/scripts/install-ansible.sh"
     destination = "/tmp/install-ansible.sh"
     connection {
       type = "ssh"
       user = "ubuntu"
-      private_key = "${file("~/.ssh/iam.pem")}"
+      private_key = "${file(var.private_key)}"
       host = "${aws_instance.docker.public_ip}"
     }
   }
@@ -70,7 +70,7 @@ resource "aws_instance" "docker" {
     connection {
       type = "ssh"
       user = "ubuntu"
-      private_key = "${file("~/.ssh/iam.pem")}"
+      private_key = "${file(var.private_key)}"
       host = "${aws_instance.docker.public_ip}"
     }
   }

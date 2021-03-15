@@ -14,11 +14,11 @@ variable "instance_type" {
 }
 
 variable "public_key" {
-  default = "~/.ssh/iam.pub"
+  default = "/root/.ssh/id_rsa.pub"
 }
 
 variable "private_key" {
-  default = "~/.ssh/iam.pem"
+  default = "/root/.ssh/id_rsa"
 }
 
 variable "ansible_user" {
@@ -27,5 +27,5 @@ variable "ansible_user" {
 
 variable "bootstrap_path" {
   description = "Script para criar usuario do Ansible"
-  default = "./scripts/create-user.sh"
+  default = "/srv/challenge/terraform/scripts/create-users.sh"
 }

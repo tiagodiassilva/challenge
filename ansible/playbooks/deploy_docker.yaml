@@ -3,10 +3,11 @@
   hosts: docker
   become: true
 
-    - git:
-      repo: git://github.com/tiagodiassilva/challenge/docker
-      dest: /srv/challenge/docker
-      update: no
+   - name: Clone challenge project
+     git: >
+       repo: git://github.com/tiagodiassilva/challenge.git
+       dest: /srv/
+       update: no
 
     - name: Change file perm
       ansible.builtin.file:
