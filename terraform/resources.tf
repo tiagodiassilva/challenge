@@ -83,8 +83,8 @@ resource "aws_instance" "docker" {
       echo "[docker]" | tee -a docker.ini;
       echo "${aws_instance.docker.public_ip} ansible_user=${var.ansible_user} ansible_ssh_private_key_file=${var.private_key}" | tee -a docker.ini;
       export ANSIBLE_HOST_KEY_CHECKING=False;
-      ansible-playbook -u ${var.ansible_user} --private-key ${var.private_key} -i docker.ini /srv/challenge/ansible/playbooks/install_docker.yaml
-      ansible-playbook -u ${var.ansible_user} --private-key ${var.private_key} -i docker.ini /srv/challenge/ansible/playbooks/deploy_docker.yaml
+      ansible-playbook -i /srv/challenge/terraform/docker.ini /srv/challenge/ansible/playbooks/install_docker.yaml
+      ansible-playbook -i /srv/challenge/terraform/docker.ini /srv/challenge/ansible/playbooks/deploy_docker.yaml
     EOT
   }
 
