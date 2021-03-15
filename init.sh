@@ -2,6 +2,7 @@
 ### Init Script
 ### Script de inicialização do Projeto
 
+if [ ! -f "prereq.configured" ]; then
 # Realiza upgrade do pacotes instalados no SO
 apt -y update
 apt -y -qq upgrade
@@ -41,8 +42,21 @@ sudo chmod +x /usr/local/bin/terraform-inventory
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 sudo ./aws/install
-sudo aws configure
+touch prereq.configured
+fi
 
+if [ ! -f awscli.configured ]; then
+while true;
+do
+    read -p "Deseja configurar o AWSCLI? Y/N " RESP
+    case $RESP in
+        Y|y) sudo aws configure; echo 'Alterar a profile para "[iam_user]" e/ou ajustes customizados necessários'; touch awscli.configured; break;;
+        N|n) echo 'Alterar a profile para "[iam_user]" e/ou ajustes customizados necessários'; touch awscli.configured; exit;;
+        * ) echo "Resposta: ${yes} / ${no}.";;
+    esac
+done
+
+else
 # Gera script para criação do usuário ansible na EC2 instance
 KEY=`cat /root/.ssh/id_rsa.pub`
 echo "#!/bin/sh
@@ -61,4 +75,6 @@ cd /srv/challenge/terraform/
 /usr/local/bin/terraform validate
 /usr/local/bin/terraform plan
 /usr/local/bin/terraform apply
+
+fi
 ## EoF
