@@ -1,4 +1,4 @@
-version: '3.5'
+version: '2.0'
 services:
 
   app:
@@ -8,7 +8,6 @@ services:
       context: ./env/app/
     image: go-app
     container_name: go-app
-    pid: "app"
     networks:
       app_net:
         ipv4_address: 192.168.0.11
@@ -21,7 +20,6 @@ services:
       context: ./env/nginx/
     image: nginx
     container_name: nginx
-    pid: "nginx"
     tty: true
     networks:
       app_net:
