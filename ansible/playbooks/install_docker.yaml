@@ -41,11 +41,11 @@
         state: latest 
         update_cache: yes
  
-    - name: Enable Docker.io
-      command: systemctl enable docker.io
+    - name: Enable Docker
+      command: systemctl enable docker
 
-    - name: Start Docker.io
-      command: systemctl start docker.io
+    - name: Start Docker
+      command: systemctl start docker
 
-    - name: Check Status Docker.io
-      command: systemctl status docker.io
+    - name: Check Status Docker
+      command: systemctl status docker
