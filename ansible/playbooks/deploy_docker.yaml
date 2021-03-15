@@ -1,15 +1,16 @@
 ---
-- name: Deploy Applications
+- name: Deploy Containers
   hosts: docker
   become: true
 
-   - name: Clone challenge project
-     git: >
-       repo: git://github.com/tiagodiassilva/challenge.git
-       dest: /srv/
-       update: no
+  tasks:
+    - name: Clone GIT
+      git:
+        repo: 'https://github.com/tiagodiassilva/challenge.git'
+        dest: /srv/challenge
+        update: no
 
-    - name: Change file perm
+    - name: Permissão de execução
       ansible.builtin.file:
         path: /srv/challenge/docker/docker-deploy.sh
         owner: root
